@@ -31,30 +31,52 @@ import java.util.HashMap;
 public class AnagramDictionary {
 
     private static final int MIN_NUM_ANAGRAMS = 5;
-    private static final int DEFAULT_WORD_LENGTH = 3;
+    private static final int DEFAULT_WORD_LENGTH = 4;
     private static final int MAX_WORD_LENGTH = 7;
-    private static final Object TAG = "MainActivity";
     private Random random = new Random();
     private ArrayList<String> wordList = new ArrayList<>();
     private HashSet<String> wordSet = new HashSet<>();
     private HashMap<String, ArrayList<String>> lettersToWord = new HashMap<String, ArrayList<String>>();
+    private HashMap<Integer, ArrayList<String>> sizeToWords = new HashMap<Integer, ArrayList<String>>();
 
 
     public AnagramDictionary(Reader reader) throws IOException {
+
         BufferedReader in = new BufferedReader(reader);
+
         String line;
+
         while((line = in.readLine()) != null) {
+
             String word = line.trim();
+            int wordSize = word.length();
             wordSet.add(word);
             wordList.add(word);
+
+            //sorts string alphabetically, ascending order
             String sort = sortLetters(word);
+
+            //if lettersToWord has sorted string of letters as key, add unsorted word to it
             if(lettersToWord.containsKey(sort)){
                 (lettersToWord.get(sort)).add(word);
             }else{
+            //if lettersToWord doesn't have sorted string as key, create new array list of words
+            //add current sorted key and unsorted word to that arraylist
+            // (keeps track of every word that can be spelled)
                 ArrayList<String> words = new ArrayList<String>();
                 words.add(word);
                 lettersToWord.put(sort, words);
             }
+
+            //populates hash map that maps word length to array list of every word of that length
+            if(sizeToWords.containsKey(wordSize)){
+                (sizeToWords.get(wordSize)).add(word);
+            }else{
+                ArrayList<String> words2 = new ArrayList<String>();
+                words2.add(word);
+                sizeToWords.put(wordSize, words2);
+            }
+//            Log.d("mainActivity", "starterWords" + sizeToWords);
         }
     }
 
@@ -104,12 +126,24 @@ public class AnagramDictionary {
 
     public String pickGoodStarterWord() {
         Random r = new Random();
+//      int wordLength = DEFAULT_WORD_LENGTH;
 
-        for(int i = r.nextInt(wordList.size()); i < wordList.size(); i++){
-            String word = sortLetters(wordList.get(i));
-            if(lettersToWord.get(word).size() >= MIN_NUM_ANAGRAMS) return wordList.get(i);
-            if(i == wordList.size() - 1) i = r.nextInt(wordList.size()) - 1; //subtracting 1 in case
-                                                                             //mew random int == wordList.size() - 1
+        //get random word of word of wordlength from word size hash map
+
+        ArrayList<String> starterWords = sizeToWords.get(DEFAULT_WORD_LENGTH);
+
+        Log.d("pickgud", "starterWords" + starterWords);
+
+        for(int i = r.nextInt(starterWords.size()); i < starterWords.size(); i++){
+            String word = starterWords.get(i);
+            word = sortLetters(word);
+            if(lettersToWord.get(word).size() >= MIN_NUM_ANAGRAMS) {
+//                wordLength++;
+                return starterWords.get(i);
+            }
+            if(i == starterWords.size() - 1){
+                i = r.nextInt(starterWords.size()) - 1; //subtracting 1 in case new random int == wordList.size() - 1
+            }
         }
         return "stop";
     }
