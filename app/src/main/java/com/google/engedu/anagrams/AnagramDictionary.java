@@ -33,6 +33,7 @@ public class AnagramDictionary {
     private static final int MIN_NUM_ANAGRAMS = 5;
     private static final int DEFAULT_WORD_LENGTH = 4;
     private static final int MAX_WORD_LENGTH = 7;
+    int wordLength = DEFAULT_WORD_LENGTH;
     private Random random = new Random();
     private ArrayList<String> wordList = new ArrayList<>();
     private HashSet<String> wordSet = new HashSet<>();
@@ -128,17 +129,17 @@ public class AnagramDictionary {
         Random r = new Random();
 //      int wordLength = DEFAULT_WORD_LENGTH;
 
-        //get random word of word of wordlength from word size hash map
+//        get random word of word of wordlength from word size hash map
 
-        ArrayList<String> starterWords = sizeToWords.get(DEFAULT_WORD_LENGTH);
+        ArrayList<String> starterWords = sizeToWords.get(wordLength);
 
-        Log.d("pickgud", "starterWords" + starterWords);
+//        Log.d("pickgud", "starterWords" + starterWords);
 
         for(int i = r.nextInt(starterWords.size()); i < starterWords.size(); i++){
             String word = starterWords.get(i);
             word = sortLetters(word);
             if(lettersToWord.get(word).size() >= MIN_NUM_ANAGRAMS) {
-//                wordLength++;
+                wordLength++;
                 return starterWords.get(i);
             }
             if(i == starterWords.size() - 1){
